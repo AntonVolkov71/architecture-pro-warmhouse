@@ -1,0 +1,34 @@
+@startuml
+title Теплый дом Web Application Component Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+System(WarmHouseSystem, "Теплый дом", "Система удаленного управления теплым домом")
+
+Container_Boundary(WarmHouseSystem, "Теплый дом") {
+  Container(WebApp, "Web Application", "JavaScript, Node.js", "Интерфейс управления системой")
+  Container(DatabaseUser, "БД пользователй", "PostgreSQL", "Хранение информации о пользователях")
+  Container(DeviceManagementSystem, "Система управления устройствами", "Node.js", "Управляет устройствами")
+}
+
+Container(WebApp, "Web Application", "Node.js") {
+ Component(AuthController, "AuthController", "Авторизации и аутентификации пользователей")
+ Component(UserController, "UserController", "Управление профилями пользователей")
+ Component(UserServiceLayer, "Сервис бизнес-логики пользователями", "Управляет бизнес-логикой пользователей")
+ Component(UserRepositoryLayer, "Слой доступа к данным", "Взаимодействие с БД")
+
+ Component(DeviceManagementController, "DeviceManagementController", "HTTP, websocket")
+
+ Component(api, "APIController", "Команды, запросы")
+}
+
+Rel(AuthController, UserServiceLayer, "Авторизации и аутентификации")
+Rel(UserController, UserServiceLayer, "Профили пользователей")
+Rel(UserServiceLayer, UserRepositoryLayer, "Чтение/запись данных")
+Rel(UserRepositoryLayer, DatabaseUser, "Чтение/запись данных")
+Rel(DeviceManagementController, api, "REST команды, запросы")
+Rel(api, DeviceManagementSystem, "REST запросы")
+
+@enduml

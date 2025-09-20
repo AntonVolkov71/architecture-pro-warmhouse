@@ -1,0 +1,33 @@
+@startuml
+title Теплый дом Device Management System Component Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+System(WarmHouseSystem, "Теплый дом", "Система удаленного управления теплым домом")
+
+Container_Boundary(WarmHouseSystem, "Теплый дом") {
+  Container(DeviceManagementSystem, "Система управления устройствами", "Node.js", "Управляет устройствами")
+  Container(DatabaseSensors, "БД датчиков", "PostgreSQL", "Хранение информации о датчиках")
+  Container(MessageBroker, "Шина данных между сервисами", "RabbitMQ", "Управление сообщениями между сервисами")
+  Container(api, "API", "Node.js", "Обработка запросов клиентов и администратора")
+}
+
+System_Ext(sensors, "Устройства умного дома", "Управляет датчиками")
+
+Container(DeviceManagementSystem, "Система управления устройствами") {
+ Component(managementDevice, "Настройка устройств", "Управление подключениями устройств")
+ Component(commandDevice, "Управления устройствами", "Отправка команд управления устройствам")
+}
+
+Rel(api, managementDevice, "REST запросы настройки устройств")
+Rel(api, commandDevice, "REST запросы управления устройствами")
+Rel(managementDevice, sensors, "Протоколы устройств")
+Rel(managementDevice, DatabaseSensors, "Чтение/запись данных")
+Rel(commandDevice, sensors, "Передача команд")
+
+Rel(managementDevice, MessageBroker, "publish -Оповещение об операции")
+Rel(commandDevice, MessageBroker, "publish- Оповещение о выполнение команды устройства")
+
+@enduml

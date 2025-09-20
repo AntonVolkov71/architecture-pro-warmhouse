@@ -1,24 +1,18 @@
 @startuml
-title Warm house Container Diagram
+title Теплый дом Context diagram
 
 top to bottom direction
 
 !includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
 
-Person(user, "User", "A user of the system")
-Person(admin, "Administrator", "An administrator managing the system")
-System(WarmhouseSystem, "Warm house", "Remote control of heating in the house")
+Person(user, "Пользователь", "Управляет отоплением" )
+Person(admin, "Инженер", "Настраивает систему отопления")
+System(WarmHouseSystem, "Теплый дом", "Система удаленного управления теплым домом")
 
-Container_Boundary(WarmhouseSystem, "Warm house System") {
-  Container(HeatingSystem, "Heating Application", "Go", "Heating system control")
-  Container(Database, "Database", "PostgreSQL", "Stores sensor data")
-}
+System_Ext(sensors, "Система отопления", "Управляет датчиками отопления")
 
-System_Ext(sensors, "Heating system", "External system control sensors")
-
-Rel(user, HeatingSystem, "Uses the system")
-Rel(admin, HeatingSystem,"Manages the system")
-Rel(HeatingSystem, Database, "Reads/Writes/Updates/Deletes sensor data")
-Rel(HeatingSystem, sensors, "Control of sensors")
+Rel(user, WarmHouseSystem, "Управление")
+Rel(admin, WarmHouseSystem,"Настройка")
+Rel(WarmHouseSystem, sensors, "Управляет датчиками")
 
 @enduml
