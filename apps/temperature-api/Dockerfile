@@ -1,35 +1,35 @@
 # Build stage
-FROM golang:1.22-alpine AS builder
+FROM node:20-alpine AS builder
 
 # Set working directory
 WORKDIR /app
 
-# Copy go.mod and go.sum files
-COPY go.mod go.sum ./
-
 # Download dependencies
-RUN go mod download
+COPY package*.json ./
+RUN npm install
 
 # Copy the source code
 COPY . .
 
 # Build the application
-RUN CGO_ENABLED=0 GOOS=linux go build -o temperature-api
+RUN npm run build
 
 # Runtime stage
-FROM alpine:latest
-
-# Install necessary runtime dependencies
-RUN apk --no-cache add ca-certificates tzdata
+FROM node:20-alpine
 
 # Set working directory
 WORKDIR /app
 
-# Copy the binary from the builder stage
-COPY --from=builder /app/temperature-api .
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package*.json ./
+
+# Download dependencies
+RUN npm install --production
+
+# Install necessary runtime dependencies
+RUN npm install --production
 
 # Expose the port the app runs on
 EXPOSE 8081
 
-# Command to run the application
-CMD ["./temperature-api"]
+CMD ["node", "dist/index.js"]
