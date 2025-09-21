@@ -67,20 +67,21 @@
 
 [Диаграмма контекста текущей версии приложения](./schemas/old_app/Context.puml)
 
-[Диаграмма (изображение) контекста текущей версии приложения](./schemas/old_app/Context-Diagram.png)
-
-
 # Задание 2. Проектирование микросервисной архитектуры
 
 В этом задании вам нужно предоставить только диаграммы в модели C4. Мы не просим вас отдельно описывать получившиеся микросервисы и то, как вы определили взаимодействия между компонентами To-Be системы. Если вы правильно подготовите диаграммы C4, они и так это покажут.
 
 **Диаграмма контейнеров (Containers)**
 
-Добавьте диаграмму.
+[Диаграмма контейнера версии приложения](./schemas/new_app/Container.puml)
 
 **Диаграмма компонентов (Components)**
 
-Добавьте диаграмму для каждого из выделенных микросервисов.
+[Диаграмма компонента WebApplication версии приложения](./schemas/new_app/components/WebApplication.component.puml)
+
+[Диаграмма компонента DeviceManagementSystem версии приложения](./schemas/new_app/components/DeviceManagementSystem.component.puml)
+
+[Диаграмма компонента NotificationScripts версии приложения](./schemas/new_app/components/NotificationScripts.component.puml)
 
 **Диаграмма кода (Code)**
 

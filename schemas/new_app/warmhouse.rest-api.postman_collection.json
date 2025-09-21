@@ -1,0 +1,175 @@
+{
+  "info": {
+    "_postman_id": "f8e3a123-4567-89ab-cdef-0123456789ab",
+    "name": "Warm House API",
+    "description": "REST API Warm House",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get Houses by User ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}0/api/v1/users/1/houses",
+              "protocol": "http",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "1",
+                "houses"
+              ]
+            },
+            "description": "Получить все дома пользователя"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "code": 200,
+              "body": "[\n  {\n    \"house_id\": 1,\n    \"title\": \"Дом на опушке\",\n    \"address\": \"Лес за болотом\",\n    \"user_id\": 1\n  },\n  {\n    \"house_id\": 2,\n    \"title\": \"Квартира на дереве\",\n    \"address\": \"Пятый дуб справа от норы\",\n    \"user_id\": 1\n  }\n]"
+            },
+            {
+              "name": "Success empty houses",
+              "code": 200,
+              "body": "[ ]"
+            },
+            {
+              "name": "Error: User not found",
+              "code": 404,
+              "body": "{ \"error\": \"User ID not found\" }"
+            },
+            {
+              "name": "Error: Server error",
+              "code": 500,
+              "body": "{ \"error\": \"Сервер устал, приходи позже\" }"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Devices",
+      "item": [
+        {
+          "name": "Get devices",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/devices",
+              "protocol": "http",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "devices"
+              ]
+            },
+            "description": "Получение списка устройств"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "code": 200,
+              "body": "[{\"device_id\":1,\"title\":\"Лампа в спальне\",\"status\":true}]"
+            },
+            {
+              "name": "Success empty",
+              "code": 200,
+              "body": "[]"
+            },
+            {
+              "name": "Error: server error",
+              "code": 500,
+              "body": "{ \"error\": \"Сервер устал, приходи позже\" }"
+            }
+          ]
+        },
+        {
+          "name": "Get Device by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/devices/1",
+              "protocol": "http",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "devices",
+                "1"
+              ]
+            },
+            "description": "Получение устройства по ID"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "code": 200,
+              "body": "{\"device_id\":1,\"title\":\"Лампа в спальне\",\"status\":true}"
+            },
+            {
+              "name": "Error: not found",
+              "code": 404,
+              "body": "{ \"error\": \"Device ID not found\" }"
+            },
+            {
+              "name": "Error: server error",
+              "code": 500,
+              "body": "{ \"error\": \"Сервер устал, приходи позже\" }"
+            }
+          ]
+        },
+        {
+          "name": "Send Device Command",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"command\":\"turn_on\"}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/devices/1/command",
+              "protocol": "http",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "devices",
+                "1",
+                "command"
+              ]
+            },
+            "description": "Отправка команды устройству"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "code": 200,
+              "body": "{\"device_id\":1,\"command\":\"turn_on\",\"status\":\"sent\"}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

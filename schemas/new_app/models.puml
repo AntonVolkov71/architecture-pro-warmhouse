@@ -1,0 +1,79 @@
+@startuml
+
+top to bottom direction
+
+entity User {
+  * user_id : NUMBER
+  --
+  username : VARCHAR
+  email : VARCHAR
+  password_hash : VARCHAR
+
+  ** role_id : NUMBER **
+}
+
+entity Role {
+  * role_id : NUMBER
+  --
+  name : VARCHAR
+  description : VARCHAR
+}
+
+entity House {
+  * house_id : NUMBER
+  --
+  title : VARCHAR
+  address : VARCHAR
+
+  ** user_id : NUMBER **
+}
+
+entity Device {
+  * device_id : NUMBER
+  --
+  title : VARCHAR
+  serial_number : VARCHAR
+  status : BOOLEAN
+
+  ** house_id : NUMBER **
+  ** device_type_id : NUMBER **
+}
+
+entity DeviceType {
+  * device_type_id : NUMBER
+  --
+  type_name : VARCHAR
+  description : VARCHAR
+}
+
+entity Module {
+  * module_id : NUMBER
+  --
+  title : VARCHAR
+  status : BOOLEAN
+
+  ** device_id : NUMBER **
+}
+
+entity TelemetryData {
+ * telemetry_data_id : NUMBER
+ --
+ air_temperature : NUMBER
+ humidity : NUMBER
+ status_connection : BOOLEAN
+ createdAt : DATE
+
+ ** device_id : NUMBER **
+}
+
+Role ||--o{ User : "одна роль много пользователей"
+User ||--o{ House : "Один User много домов"
+House ||--o{ Device : "Один дом много устройств"
+Device ||--|| DeviceType : "Одно устройство один тип"
+Device ||--o{ Module : "Одно устройство много модулей"
+Device ||--o{ TelemetryData : "Одно устройство разные телеметрии"
+
+' ||--o{ — один-ко-многим.
+' }o--o{ — многие-ко-многим.
+' ||--|| — один-к-одному
+@enduml
