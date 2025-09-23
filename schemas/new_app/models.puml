@@ -33,7 +33,10 @@ entity Device {
   --
   title : VARCHAR
   serial_number : VARCHAR
-  status : BOOLEAN
+  ip : VARCHAR
+  port : NUMBER
+  status_connection : BOOLEAN
+
 
   ** house_id : NUMBER **
   ** device_type_id : NUMBER **
@@ -58,9 +61,9 @@ entity Module {
 entity TelemetryData {
  * telemetry_data_id : NUMBER
  --
+ device_id: NUMBER
  air_temperature : NUMBER
  humidity : NUMBER
- status_connection : BOOLEAN
  createdAt : DATE
 
  ** device_id : NUMBER **
