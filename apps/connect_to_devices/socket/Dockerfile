@@ -29,7 +29,4 @@ RUN npm install --production
 # Install necessary runtime dependencies
 RUN npm install --production
 
-# Expose the port the app runs on
-EXPOSE 9999
-
 CMD ["node", "dist/socket/main.js"]

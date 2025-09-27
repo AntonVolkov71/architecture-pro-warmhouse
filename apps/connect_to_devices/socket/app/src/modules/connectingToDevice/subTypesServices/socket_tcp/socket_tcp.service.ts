@@ -49,7 +49,7 @@ export class SocketTcpService extends ConnectingToDeviceInterface {
 
   public connectionStop(device: DeviceDto): void {
     try {
-      console.log('connectionStop');
+      console.log(device.ip, 'connection Stop');
       if (this.client) {
         this.client.removeAllListeners();
         this.client.end();
@@ -83,7 +83,12 @@ export class SocketTcpService extends ConnectingToDeviceInterface {
       try {
         const message = data.toString().trim();
 
-        if (message === SocketTcpTelemetryDataType.TELEMETRY) {
+        const parseMessage = JSON.parse(message);
+        const queryTelemetry =
+          'query' in parseMessage &&
+          parseMessage['query'] === SocketTcpTelemetryDataType.TELEMETRY;
+
+        if (queryTelemetry) {
           this.socketTcpTelemetryService.handleDataTelemetry(
             device['id'],
             message

@@ -1,5 +1,8 @@
 server:
-  port: 11003
+  port: 10000
+
+tcp:
+  port: 11000
 
 spring:
   devtools:

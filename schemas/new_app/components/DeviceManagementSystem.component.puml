@@ -11,36 +11,22 @@ Container_Boundary(WarmHouseSystem, "Теплый дом") {
   Container(DatabaseSensors, "БД датчиков", "PostgreSQL", "Хранение информации о датчиках")
   Container(MessageBroker, "Шина данных между сервисами", "RabbitMQ", "Управление сообщениями между сервисами")
   Container(api, "API", "Node.js", "Обработка запросов клиентов и администратора")
+  Container(ConnectToDeviceServices, "Сервисы подключения по протоколам", "Socket, Zigbee, Wi-Fi", "Подключение по протоколу")
 }
-
-System_Ext(sensors, "Устройства умного дома", "Управляет датчиками")
 
 Container(DeviceManagementSystem, "Система управления устройствами") {
  Component(managementDevice, "Настройка устройств", "Управление подключениями устройств")
- Component(connectionInterface, "Интерфейс подключений", "Абстракция для подключений устройств")
- Component(wifiConnection, "Сервис Wi-Fi", "Подключение по Wi-Fi")
- Component(matterConnection, "Сервис Matter", "Подключение по Matter")
- Component(zegbeeConnection, "Сервис Zegbee", "Подключение по Zegbee")
  Component(commandDevice, "Управления устройствами", "Отправка команд управления устройствам")
- Component(telemetryService, "Сервис телеметрии", "Получение и передача телеметрии")
 }
 
 Rel(api, managementDevice, "REST запросы настройки устройств")
 Rel(api, commandDevice, "REST запросы управления устройствами")
 
-Rel(managementDevice, connectionInterface, "Подключить/Отключить")
-Rel(commandDevice, connectionInterface, "Передача команд")
-
-Rel(connectionInterface, sensors, "Протоколы устройств")
-Rel(managementDevice, wifiConnection, "Интерфейс подключений")
-Rel(managementDevice, matterConnection, "Интерфейс подключений")
-Rel(managementDevice, zegbeeConnection, "Интерфейс подключений")
-
 Rel(managementDevice, DatabaseSensors, "Чтение/запись данных")
 
-Rel(managementDevice, MessageBroker, "publish -Оповещение об операции")
-Rel(commandDevice, MessageBroker, "publish- Оповещение о выполнение команды устройства")
+Rel(managementDevice, MessageBroker, "публикация Подключить/Отключить")
+Rel(commandDevice, MessageBroker, "публикация команд устройств")
+Rel(ConnectToDeviceServices, MessageBroker, "подписка на команды устройств")
+Rel(ConnectToDeviceServices, MessageBroker, "подписка на Подключить/Отключить")
 
-Rel(sensors, telemetryService, "Отправка телеметрии")
-Rel(telemetryService, MessageBroker, "publish - События телеметрии")
 @enduml

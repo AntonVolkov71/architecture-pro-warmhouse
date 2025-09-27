@@ -1,8 +1,4 @@
-### Build app
+### Docker dev
 
 docker build -t sockettcp .
-Запусти контейнер:
-
-### Start app
-
-docker run -p 11000:8080 sockettcp
+docker run -p 8888:8080 sockettcp

@@ -37,7 +37,6 @@ entity Device {
   port : NUMBER
   status_connection : BOOLEAN
 
-
   ** house_id : NUMBER **
   ** device_type_id : NUMBER **
 }
