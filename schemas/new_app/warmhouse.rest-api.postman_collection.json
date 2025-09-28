@@ -2,20 +2,20 @@
   "info": {
     "_postman_id": "f8e3a123-4567-89ab-cdef-0123456789ab",
     "name": "Warm House API",
-    "description": "REST API Warm House",
+    "description": "REST API Warm House (Sensors)",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
-      "name": "Users",
+      "name": "Sensors",
       "item": [
         {
-          "name": "Get Houses by User ID",
+          "name": "Get all sensors",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}0/api/v1/users/1/houses",
+              "raw": "{{baseUrl}}/api/v1/sensors",
               "protocol": "http",
               "host": [
                 "{{baseUrl}}"
@@ -23,64 +23,16 @@
               "path": [
                 "api",
                 "v1",
-                "users",
-                "1",
-                "houses"
+                "sensors"
               ]
             },
-            "description": "Получить все дома пользователя"
+            "description": "Получение списка всех датчиков"
           },
           "response": [
             {
               "name": "Success",
               "code": 200,
-              "body": "[\n  {\n    \"house_id\": 1,\n    \"title\": \"Дом на опушке\",\n    \"address\": \"Лес за болотом\",\n    \"user_id\": 1\n  },\n  {\n    \"house_id\": 2,\n    \"title\": \"Квартира на дереве\",\n    \"address\": \"Пятый дуб справа от норы\",\n    \"user_id\": 1\n  }\n]"
-            },
-            {
-              "name": "Success empty houses",
-              "code": 200,
-              "body": "[ ]"
-            },
-            {
-              "name": "Error: User not found",
-              "code": 404,
-              "body": "{ \"error\": \"User ID not found\" }"
-            },
-            {
-              "name": "Error: Server error",
-              "code": 500,
-              "body": "{ \"error\": \"Сервер устал, приходи позже\" }"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "Devices",
-      "item": [
-        {
-          "name": "Get devices",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/devices",
-              "protocol": "http",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "devices"
-              ]
-            },
-            "description": "Получение списка устройств"
-          },
-          "response": [
-            {
-              "name": "Success",
-              "code": 200,
-              "body": "[{\"device_id\":1,\"title\":\"Лампа в спальне\",\"status\":true}]"
+              "body": "[{\"id\":1,\"name\":\"Лампа в спальне\",\"type\":\"LIGHT\",\"connect_type\":\"SOCKET\",\"connect_sub_type\":\"SOCKET_TCP\",\"location\":\"Bedroom\",\"unit\":\"lux\",\"value\":0,\"status\":\"true\",\"last_updated\":\"2025-09-28T12:00:00Z\",\"created_at\":\"2025-09-28T11:00:00Z\"}]"
             },
             {
               "name": "Success empty",
@@ -88,18 +40,18 @@
               "body": "[]"
             },
             {
-              "name": "Error: server error",
+              "name": "Server error",
               "code": 500,
               "body": "{ \"error\": \"Сервер устал, приходи позже\" }"
             }
           ]
         },
         {
-          "name": "Get Device by ID",
+          "name": "Get sensor by ID",
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{baseUrl}}/api/v1/devices/1",
+              "raw": "{{baseUrl}}/api/v1/sensors/1",
               "protocol": "http",
               "host": [
                 "{{baseUrl}}"
@@ -107,32 +59,105 @@
               "path": [
                 "api",
                 "v1",
-                "devices",
+                "sensors",
                 "1"
               ]
             },
-            "description": "Получение устройства по ID"
+            "description": "Получение сенсора по ID"
           },
           "response": [
             {
               "name": "Success",
               "code": 200,
-              "body": "{\"device_id\":1,\"title\":\"Лампа в спальне\",\"status\":true}"
+              "body": "{\"id\":1,\"name\":\"Лампа в спальне\",\"type\":\"LIGHT\",\"connect_type\":\"SOCKET\",\"connect_sub_type\":\"SOCKET_TCP\",\"location\":\"Bedroom\",\"unit\":\"lux\",\"value\":0,\"status\":\"true\",\"last_updated\":\"2025-09-28T12:00:00Z\",\"created_at\":\"2025-09-28T11:00:00Z\"}"
             },
             {
-              "name": "Error: not found",
+              "name": "Not found",
               "code": 404,
-              "body": "{ \"error\": \"Device ID not found\" }"
+              "body": "{ \"error\": \"Sensor ID not found\" }"
             },
             {
-              "name": "Error: server error",
+              "name": "Server error",
               "code": 500,
               "body": "{ \"error\": \"Сервер устал, приходи позже\" }"
             }
           ]
         },
         {
-          "name": "Send Device Command",
+          "name": "Create sensor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"Датчик температуры\",\"type\":\"TEMPERATURE\",\"connect_type\":\"SOCKET\",\"connect_sub_type\":\"SOCKET_TCP\",\"location\":\"Living Room\",\"unit\":\"°C\"}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/sensors",
+              "protocol": "http",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "sensors"
+              ]
+            },
+            "description": "Создание нового датчика"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "code": 201,
+              "body": "{\"id\":2,\"name\":\"Датчик температуры\",\"type\":\"TEMPERATURE\",\"connect_type\":\"SOCKET\",\"connect_sub_type\":\"SOCKET_TCP\",\"location\":\"Living Room\",\"unit\":\"°C\",\"value\":0,\"status\":\"false\",\"last_updated\":\"2025-09-28T12:10:00Z\",\"created_at\":\"2025-09-28T12:10:00Z\"}"
+            }
+          ]
+        },
+        {
+          "name": "Update sensor",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"Датчик температуры обновлён\",\"type\":\"TEMPERATURE\",\"connect_type\":\"SOCKET\",\"connect_sub_type\":\"SOCKET_TCP\",\"location\":\"Living Room\",\"unit\":\"°C\",\"status\":true,\"value\":22}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/sensors/2",
+              "protocol": "http",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "sensors",
+                "2"
+              ]
+            },
+            "description": "Обновление датчика по ID"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "code": 200,
+              "body": "{\"id\":2,\"name\":\"Датчик температуры обновлён\",\"type\":\"TEMPERATURE\",\"connect_type\":\"SOCKET\",\"connect_sub_type\":\"SOCKET_TCP\",\"location\":\"Living Room\",\"unit\":\"°C\",\"value\":22,\"status\":\"true\",\"last_updated\":\"2025-09-28T12:20:00Z\",\"created_at\":\"2025-09-28T12:10:00Z\"}"
+            }
+          ]
+        },
+        {
+          "name": "Send sensor command",
           "request": {
             "method": "POST",
             "header": [
@@ -146,7 +171,7 @@
               "raw": "{\"command\":\"turn_on\"}"
             },
             "url": {
-              "raw": "{{baseUrl}}/api/v1/devices/1/command",
+              "raw": "{{baseUrl}}/api/v1/sensors/1/command",
               "protocol": "http",
               "host": [
                 "{{baseUrl}}"
@@ -154,18 +179,18 @@
               "path": [
                 "api",
                 "v1",
-                "devices",
+                "sensors",
                 "1",
                 "command"
               ]
             },
-            "description": "Отправка команды устройству"
+            "description": "Отправка команды датчику"
           },
           "response": [
             {
               "name": "Success",
               "code": 200,
-              "body": "{\"device_id\":1,\"command\":\"turn_on\",\"status\":\"sent\"}"
+              "body": "{\"id\":1,\"command\":\"turn_on\",\"status\":\"sent\"}"
             }
           ]
         }

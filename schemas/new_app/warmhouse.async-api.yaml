@@ -10,41 +10,39 @@ servers:
     protocol: amqp
 
 channels:
-  device.{device_id}.telemetry:
-    description: Поток телеметрии от устройства
+  telemetry.{sensor_id}.emit:
+    description: Канал телеметрии для конкретного устройства
     parameters:
-      device_id:
+      sensor_id:
         description: Идентификатор устройства
         schema:
           type: integer
-    subscribe:
-      summary: Получение телеметрии устройства
+    publish:
+      summary: Отправка данных телеметрии устройства
       message:
         contentType: application/json
         payload:
-          type: object
-          properties:
-            device_id:
-              type: integer
-            air_temperature:
-              type: number
-            humidity:
-              type: number
-            status_connection:
-              type: boolean
-            createdAt:
-              type: string
-              format: date-time
-          required:
-            - device_id
-            - air_temperature
-            - humidity
-            - status_connection
-            - createdAt
-        examples:
-          - payload:
-              device_id: 1
-              air_temperature: 150
-              humidity: 99
-              status_connection: true
-              createdAt: "2025-09-21T00:00:01Z"
+          $ref: '#/components/schemas/Telemetry'
+
+components:
+  schemas:
+    Telemetry:
+      type: object
+      properties:
+        sensor_id:
+          type: integer
+          description: Идентификатор устройства
+        air_temperature:
+          type: number
+          description: Температура воздуха
+        humidity:
+          type: number
+          description: Влажность
+        status_connection:
+          type: boolean
+          description: Статус подключения
+      required:
+        - sensor_id
+        - air_temperature
+        - humidity
+        - status_connection

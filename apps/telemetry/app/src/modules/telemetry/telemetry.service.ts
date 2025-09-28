@@ -1,11 +1,20 @@
-import { Telemetry } from '../../types/telemetry';
 import { Injectable } from '@nestjs/common';
+import { TelemetryEntity } from '../../types/telemetry/telemetry.entity';
+import { Telemetry } from '../../types/telemetry/telemetry';
+import { TelemetryRepository } from './telemetry.repository';
 
 @Injectable()
 export class TelemetryService {
-  public handleData(data: Telemetry) {
+  constructor(private readonly repository: TelemetryRepository) {}
+
+  public async handleData(data: Telemetry) {
     try {
-      console.info('Telemetry data: ', data);
+      console.info('telemetry data', data);
+
+      const entity = new TelemetryEntity();
+      entity.initialization(data);
+
+      await this.repository.save(entity);
     } catch (e) {
       if (e instanceof Error) {
         console.error('error text', e.message);

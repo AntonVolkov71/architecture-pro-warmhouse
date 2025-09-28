@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { EventBusInterface } from './EventBus.interface';
+import {Injectable} from '@nestjs/common';
+import {EventBusInterface} from './EventBus.interface';
 
 @Injectable()
 export class EventBusService {

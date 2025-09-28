@@ -5,9 +5,9 @@ services:
     image: postgres:16
     container_name: smarthome-postgres
     environment:
-      POSTGRES_DB: smarthome
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./smart_home/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -56,25 +56,25 @@ services:
 
   connect_to_devices_socket:
     build:
-      context: ./connect_to_devices/socket
+      context: ./connect_to/socket
       dockerfile: Dockerfile
-    container_name: connect_to_devices_socket
+    container_name: connect_to_socket
     depends_on:
       postgres:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
     environment:
-      - URI_EVENT_BUS=${URI_EVENT_BUS}
-      - MOCKED_CONNECTION_IP=sensors_socket_tcp
+      - MOCKED_CONNECTION_IP=mock_sensors_socket_tcp
       - MOCKED_CONNECTION_PORT=8080
+      - URI_EVENT_BUS=${URI_EVENT_BUS}
     ports:
       - "8082:8080"
     restart: unless-stopped
     networks:
       - smarthome-network
 
-  sensors_socket_tcp:
+  mock_sensors_socket_tcp:
     build:
       context: ./mock_sensors/sensor_socket_tcp
       dockerfile: Dockerfile
@@ -101,9 +101,40 @@ services:
       rabbitmq:
         condition: service_healthy
     environment:
-      - URI_EVENT_BUS=${URI_EVENT_BUS}
+      DB_TYPE: ${DB_TYPE}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_USER: ${DB_USER}
+      URI_EVENT_BUS: ${URI_EVENT_BUS}
     ports:
       - "8084:8080"
+    restart: unless-stopped
+    networks:
+      - smarthome-network
+
+  device-management:
+    build:
+      context: ./device_management
+      dockerfile: Dockerfile
+    container_name: device-management
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      DB_TYPE: ${DB_TYPE}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_USER: ${DB_USER}
+      SERVER_PORT: 8080
+      URI_EVENT_BUS: ${URI_EVENT_BUS}
+    ports:
+      - "8085:8080"
     restart: unless-stopped
     networks:
       - smarthome-network
@@ -119,8 +150,8 @@ services:
       temperature-api:
         condition: service_started
     environment:
-      - DATABASE_URL=${DATABASE_URL}
-      - TEMPERATURE_API_URL=http://temperature-api:8081
+      - DEVICE_MANAGEMENT_URL=http://device-management:8080/api/v1
+      - TEMPERATURE_API_URL=http://temperature-api:8081/api/v1
     ports:
       - "8080:8080"
     restart: unless-stopped

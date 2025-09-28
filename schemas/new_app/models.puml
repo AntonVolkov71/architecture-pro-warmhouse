@@ -28,24 +28,22 @@ entity House {
   ** user_id : NUMBER **
 }
 
-entity Device {
-  * device_id : NUMBER
+entity Sensor {
+  * sensor_id : NUMBER
   --
-  title : VARCHAR
-  serial_number : VARCHAR
-  ip : VARCHAR
-  port : NUMBER
-  status_connection : BOOLEAN
+  name : VARCHAR
+  type : VARCHAR
+  connect_type : VARCHAR
+  connect_sub_type : VARCHAR
+  location : VARCHAR
+  value : NUMBER
+  status : BOOLEAN
+  unit : VARCHAR
+  unit : VARCHAR
+  last_updated : DATE
+  created_at : DATE
 
   ** house_id : NUMBER **
-  ** device_type_id : NUMBER **
-}
-
-entity DeviceType {
-  * device_type_id : NUMBER
-  --
-  type_name : VARCHAR
-  description : VARCHAR
 }
 
 entity Module {
@@ -54,26 +52,24 @@ entity Module {
   title : VARCHAR
   status : BOOLEAN
 
-  ** device_id : NUMBER **
+  ** sensor_id : NUMBER **
 }
 
 entity TelemetryData {
  * telemetry_data_id : NUMBER
  --
- device_id: NUMBER
  air_temperature : NUMBER
  humidity : NUMBER
  createdAt : DATE
 
- ** device_id : NUMBER **
+ ** sensor_id : NUMBER **
 }
 
 Role ||--o{ User : "одна роль много пользователей"
 User ||--o{ House : "Один User много домов"
-House ||--o{ Device : "Один дом много устройств"
-Device ||--|| DeviceType : "Одно устройство один тип"
-Device ||--o{ Module : "Одно устройство много модулей"
-Device ||--o{ TelemetryData : "Одно устройство разные телеметрии"
+House ||--o{ Sensor : "Один дом много устройств"
+Sensor ||--o{ Module : "Одно устройство много модулей"
+Sensor ||--o{ TelemetryData : "Одно устройство разные телеметрии"
 
 ' ||--o{ — один-ко-многим.
 ' }o--o{ — многие-ко-многим.

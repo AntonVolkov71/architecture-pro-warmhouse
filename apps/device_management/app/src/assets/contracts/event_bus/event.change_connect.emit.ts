@@ -1,12 +1,13 @@
-import {DeviceDto, eventBusSchema} from '../../../types/event_bus';
+import {eventBusSchema} from '../../../types/event_bus';
+import {SensorEntity} from '../../../types/sensors/sensor.entity';
 
 export namespace EventsChangeConnectEmitContract {
   export const routingKey = 'events.changing_connect.query';
-  export const exchange = eventBusSchema.connect_to_device.name;
+  export const exchange = eventBusSchema.connect_to.name;
   export const queue = 'changingConnect';
 
   export class Request {
-    device: DeviceDto;
+    sensor: SensorEntity
   }
 
   export class Response {
