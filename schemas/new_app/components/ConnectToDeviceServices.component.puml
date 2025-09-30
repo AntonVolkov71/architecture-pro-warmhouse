@@ -1,0 +1,27 @@
+@startuml
+title Теплый дом Сервисы подключения по протоколам Component Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+System(WarmHouseSystem, "Теплый дом", "Система удаленного управления теплым домом")
+Container_Boundary(WarmHouseSystem, "Теплый дом") {
+  Container(ConnectToDeviceSocketServices, "Сервис подключения по Socket", "Node.js", "Взаимодействие с устройствами по Socket")
+  Container(ConnectToDeviceZigbeeServices, "Сервис подключения по Zigbee", "Node.js/ Java / C++", "Взаимодействие с устройствами по Zigbee")
+  Container(ConnectToDeviceSomeServices, "Сервис подключения по ХХХ", "Node.js/ Java / C++", "Взаимодействие с устройствами по ХХХ")
+  Container(MessageBroker, "Шина данных между сервисами", "RabbitMQ", "Управление сообщениями между сервисами")
+}
+
+System_Ext(sensors, "Устройства умного дома", "Управляет датчиками")
+
+Rel(MessageBroker, ConnectToDeviceSocketServices, "Подписка на команды управления устройствами по Socket")
+Rel(MessageBroker, ConnectToDeviceZigbeeServices, "Подписка на команды управления устройствами по Zigbee")
+Rel(MessageBroker, ConnectToDeviceSomeServices, "Подписка на команды управления устройствами по ХХХ")
+Rel(ConnectToDeviceSomeServices, MessageBroker, "Рассылка телеметрии")
+
+Rel(ConnectToDeviceSocketServices, sensors, "Взаимодействие с устройствами, телеметрия")
+Rel(ConnectToDeviceZigbeeServices, sensors, "Взаимодействие с устройствами, телеметрия")
+Rel(ConnectToDeviceSomeServices, sensors, "Взаимодействие с устройствами, телеметрия")
+
+@enduml

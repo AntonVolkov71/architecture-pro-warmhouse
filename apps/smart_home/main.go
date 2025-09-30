@@ -9,7 +9,6 @@ import (
 	"syscall"
 	"time"
 
-	"smarthome/db"
 	"smarthome/handlers"
 	"smarthome/services"
 
@@ -18,17 +17,22 @@ import (
 
 func main() {
 	// Set up database connection
-	dbURL := getEnv("DATABASE_URL", "postgres://postgres:postgres@localhost:5432/smarthome")
-	database, err := db.New(dbURL)
-	if err != nil {
-		log.Fatalf("Unable to connect to database: %v\n", err)
-	}
-	defer database.Close()
+// 	dbURL := getEnv("DATABASE_URL", "postgres://postgres:postgres@localhost:5432/smarthome")
+// 	database, err := db.New(dbURL)
+// 	if err != nil {
+// 		log.Fatalf("Unable to connect to database: %v\n", err)
+// 	}
+// 	defer database.Close()
 
-	log.Println("Connected to database successfully")
+// 	log.Println("Connected to database successfully")
+
+    // Initialize device management service
+    deviceMgmtURL := getEnv("DEVICE_MANAGEMENT_URL", "http://192.168.1.85:3000/api/v1")
+    deviceMgmtClient := services.NewDeviceMgmtClient(deviceMgmtURL)
+    log.Printf("Device Management API URL: %s\n", deviceMgmtURL)
 
 	// Initialize temperature service
-	temperatureAPIURL := getEnv("TEMPERATURE_API_URL", "http://temperature-api:8081")
+	temperatureAPIURL := getEnv("TEMPERATURE_API_URL", "http://temperature-api:8081/api/v1")
 	temperatureService := services.NewTemperatureService(temperatureAPIURL)
 	log.Printf("Temperature service initialized with API URL: %s\n", temperatureAPIURL)
 
@@ -46,7 +50,7 @@ func main() {
 	apiRoutes := router.Group("/api/v1")
 
 	// Register sensor routes
-	sensorHandler := handlers.NewSensorHandler(database, temperatureService)
+	sensorHandler := handlers.NewSensorHandler(deviceMgmtClient, temperatureService)
 	sensorHandler.RegisterRoutes(apiRoutes)
 
 	// Start server

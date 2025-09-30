@@ -1,0 +1,77 @@
+@startuml
+
+top to bottom direction
+
+entity User {
+  * user_id : NUMBER
+  --
+  username : VARCHAR
+  email : VARCHAR
+  password_hash : VARCHAR
+
+  ** role_id : NUMBER **
+}
+
+entity Role {
+  * role_id : NUMBER
+  --
+  name : VARCHAR
+  description : VARCHAR
+}
+
+entity House {
+  * house_id : NUMBER
+  --
+  title : VARCHAR
+  address : VARCHAR
+
+  ** user_id : NUMBER **
+}
+
+entity Sensor {
+  * sensor_id : NUMBER
+  --
+  name : VARCHAR
+  type : VARCHAR
+  connect_type : VARCHAR
+  connect_sub_type : VARCHAR
+  location : VARCHAR
+  value : NUMBER
+  status : BOOLEAN
+  unit : VARCHAR
+  unit : VARCHAR
+  last_updated : DATE
+  created_at : DATE
+
+  ** house_id : NUMBER **
+}
+
+entity Module {
+  * module_id : NUMBER
+  --
+  title : VARCHAR
+  status : BOOLEAN
+
+  ** sensor_id : NUMBER **
+}
+
+entity TelemetryData {
+ * telemetry_data_id : NUMBER
+ --
+ air_temperature : NUMBER
+ humidity : NUMBER
+ createdAt : DATE
+
+ ** sensor_id : NUMBER **
+}
+
+Role ||--o{ User : "одна роль много пользователей"
+User ||--o{ House : "Один User много домов"
+House ||--o{ Sensor : "Один дом много устройств"
+Sensor ||--o{ Module : "Одно устройство много модулей"
+Sensor ||--o{ TelemetryData : "Одно устройство разные телеметрии"
+
+' ||--o{ — один-ко-многим.
+' }o--o{ — многие-ко-многим.
+' ||--|| — один-к-одному
+@enduml

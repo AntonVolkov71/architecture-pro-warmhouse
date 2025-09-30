@@ -1,0 +1,26 @@
+@startuml
+title Теплый дом Оповещение пользователей Component Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+System(WarmHouseSystem, "Теплый дом", "Система удаленного управления теплым домом")
+
+Container_Boundary(WarmHouseSystem, "Теплый дом") {
+  Container(NotificationScripts, "Система оповещения пользователей", "Java", "Отправка данных по email, sms")
+
+  Container(MessageBroker, "Шина данных между сервисами", "RabbitMQ", "Управление сообщениями между сервисами")
+}
+
+Container(NotificationScripts, "Система оповещения пользователей") {
+ Component(notificationService, "Сервис оповещения", "управление событиями и сообщениями")
+ Component(email, "Email служба", "Отправка email")
+ Component(sms, "SMS служба", "Отправка sms")
+}
+
+Rel(notificationService, MessageBroker, "subscribe - Подписка на операции")
+Rel(notificationService, email, "Отправка email")
+Rel(notificationService, sms, "Отправка sms")
+
+@enduml

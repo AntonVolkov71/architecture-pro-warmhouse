@@ -1,13 +1,11 @@
 package handlers
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 
-	"smarthome/db"
 	"smarthome/models"
 	"smarthome/services"
 
@@ -16,14 +14,14 @@ import (
 
 // SensorHandler handles sensor-related requests
 type SensorHandler struct {
-	DB                 *db.DB
+	DeviceMgmt *services.DeviceMgmtClient
 	TemperatureService *services.TemperatureService
 }
 
 // NewSensorHandler creates a new SensorHandler
-func NewSensorHandler(db *db.DB, temperatureService *services.TemperatureService) *SensorHandler {
+func NewSensorHandler(deviceMgmt *services.DeviceMgmtClient, temperatureService *services.TemperatureService) *SensorHandler {
 	return &SensorHandler{
-		DB:                 db,
+		DeviceMgmt: deviceMgmt,
 		TemperatureService: temperatureService,
 	}
 }
@@ -33,18 +31,20 @@ func (h *SensorHandler) RegisterRoutes(router *gin.RouterGroup) {
 	sensors := router.Group("/sensors")
 	{
 		sensors.GET("", h.GetSensors)
-		sensors.GET("/:id", h.GetSensorByID)
-		sensors.POST("", h.CreateSensor)
-		sensors.PUT("/:id", h.UpdateSensor)
-		sensors.DELETE("/:id", h.DeleteSensor)
-		sensors.PATCH("/:id/value", h.UpdateSensorValue)
-		sensors.GET("/temperature/:location", h.GetTemperatureByLocation)
+        sensors.POST("", h.CreateSensor)
+        sensors.POST("/:id/command", h.SendCommand)
+        sensors.GET("/:id", h.GetSensorByID)
+        sensors.PUT("/:id", h.UpdateSensor)
+        sensors.DELETE("/:id", h.DeleteSensor)
+        sensors.PATCH("/:id/value", h.UpdateSensorValue)
+        sensors.GET("/temperature/:location", h.GetTemperatureByLocation)
+
 	}
 }
 
 // GetSensors handles GET /api/v1/sensors
 func (h *SensorHandler) GetSensors(c *gin.Context) {
-	sensors, err := h.DB.GetSensors(context.Background())
+	sensors, err := h.DeviceMgmt.GetSensors()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -77,7 +77,7 @@ func (h *SensorHandler) GetSensorByID(c *gin.Context) {
 		return
 	}
 
-	sensor, err := h.DB.GetSensorByID(context.Background(), id)
+	sensor, err := h.DeviceMgmt.GetSensorByID(id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Sensor not found"})
 		return
@@ -136,7 +136,7 @@ func (h *SensorHandler) CreateSensor(c *gin.Context) {
 		return
 	}
 
-	sensor, err := h.DB.CreateSensor(context.Background(), sensorCreate)
+	sensor, err := h.DeviceMgmt.CreateSensor(sensorCreate)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -159,7 +159,7 @@ func (h *SensorHandler) UpdateSensor(c *gin.Context) {
 		return
 	}
 
-	sensor, err := h.DB.UpdateSensor(context.Background(), id, sensorUpdate)
+	sensor, err := h.DeviceMgmt.UpdateSensor(id, sensorUpdate)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -176,7 +176,7 @@ func (h *SensorHandler) DeleteSensor(c *gin.Context) {
 		return
 	}
 
-	err = h.DB.DeleteSensor(context.Background(), id)
+	err = h.DeviceMgmt.DeleteSensor(id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -203,11 +203,38 @@ func (h *SensorHandler) UpdateSensorValue(c *gin.Context) {
 		return
 	}
 
-	err = h.DB.UpdateSensorValue(context.Background(), id, request.Value, request.Status)
+	err = h.DeviceMgmt.UpdateSensorValue(id, request.Value, request.Status)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Sensor value updated successfully"})
+}
+
+// SendCommand handles POST /api/v1/sensors/:id/command
+func (h *SensorHandler) SendCommand(c *gin.Context) {
+   log.Printf("SendCommand request: ")
+    id, err := strconv.Atoi(c.Param("id"))
+    if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid sensor ID"})
+        return
+    }
+
+    var req struct {
+        Command string `json:"command" binding:"required"`
+    }
+
+    if err := c.ShouldBindJSON(&req); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+
+    // отправляем команду через сервис
+    if err := h.DeviceMgmt.SendCommand(id, req.Command); err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{"message": "Command sent successfully"})
 }

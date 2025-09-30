@@ -1,0 +1,74 @@
+{
+  "name": "device_management",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "app/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "defaultConfiguration": "production",
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist",
+        "main": "app/src/main.ts",
+        "tsConfig": "app/tsconfig.app.json",
+        "assets": [
+          "app/src/assets"
+        ],
+        "isolatedConfig": true,
+        "webpackConfig": "app/webpack.config.js"
+      },
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "device_management:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "device_management:build:development"
+        },
+        "production": {
+          "buildTarget": "device_management:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": [
+        "{options.outputFile}"
+      ],
+      "options": {
+        "lintFilePatterns": [
+          "app/**/*.ts"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": [
+        "{workspaceRoot}/coverage/{projectRoot}"
+      ],
+      "options": {
+        "jestConfig": "app/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    }
+  },
+  "tags": []
+}

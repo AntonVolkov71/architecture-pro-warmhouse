@@ -1,0 +1,48 @@
+@startuml
+title Теплый дом Container Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(user, "Пользователь", "Управляет и настраивает систему" )
+Person(admin, "Administrator", "Обслуживание клиентов и системы")
+
+System(WarmHouseSystem, "Теплый дом", "Система удаленного управления теплым домом")
+System(WarmHouseSystemFuture, "Теплый дом развитие", "Сервисы, системы расширения")
+
+Container_Boundary(WarmHouseSystem, "Теплый дом") {
+  Container(WebApp, "Web Application", "JavaScript, Node.js", "Интерфейс управления системой")
+  Container(api, "API", "Node.js", "Обработка запросов клиентов и администратора")
+  Container(auth, "Сервис авторизации", "Node.js", "Авторизация и аутентификация пользователей")
+  Container(MessageBroker, "Шина данных между сервисами", "RabbitMQ", "Управление сообщениями между сервисами")
+  Container(DeviceManagementSystem, "Система управления устройствами", "Node.js", "Управляет логикой взаимодействия устройствами")
+  Container(ConnectToDeviceServices, "Сервисы подключения по протоколам", "Socket, Zigbee, Wi-Fi", "Подключение по протоколу")
+  Container(TelemetryService, "Telemetry Service", "Node.js / Java", "Сбор и обработка телеметрии от устройств")
+
+  Container(DatabaseUser, "БД пользователй", "PostgreSQL", "Хранение информации о пользователях")
+  Container(DatabaseSensors, "БД датчиков", "PostgreSQL", "Хранение датчиков")
+  Container(DatabaseTelemetry, "БД данные от датчиков", "PostgreSQL", "Хранение информации о датчиках")
+}
+
+Container_Boundary(WarmHouseSystemFuture, "Теплый дом развитие") {
+  Container(IntegrationProtocolsSDK, "Универсальная система интеграция SDK", "Java, C++", "Внешние системы")
+  Container(CommandScripts, "Система управления сценариями команд", "Java", "Команда 1 -> Действие 1 -> Действие 2")
+}
+
+System_Ext(sensors, "Устройства умного дома", "Управляет датчиками")
+
+Rel(user, WebApp, "Управление")
+Rel(admin, WebApp, "Обслуживание системы")
+Rel(WebApp, auth, "Авторизация и аутентификация")
+Rel(auth, DatabaseUser, "Запросы пользователей")
+Rel(auth, api, "Передача токена")
+Rel(api, DeviceManagementSystem, "Запросы команд управления устройствами")
+Rel(DeviceManagementSystem, MessageBroker, "публикация команд для устройств")
+Rel(DeviceManagementSystem, DatabaseSensors, "Создает/Читает/Обновляет/Удаляет данные по устройству")
+
+Rel(sensors, ConnectToDeviceServices, "Соединение, телеметрия")
+Rel(ConnectToDeviceServices, MessageBroker, "публикация телеметрии")
+Rel(MessageBroker, TelemetryService, "subscribe - подписка телеметрии")
+Rel(TelemetryService, DatabaseTelemetry, "сохранение телеметрии")
+@enduml

@@ -1,0 +1,13 @@
+server:
+  port: 10000
+
+tcp:
+  port: 11000
+
+spring:
+  devtools:
+    restart:
+      enabled: true
+  h2:
+    console:
+      enabled: true
